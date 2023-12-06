@@ -3,15 +3,29 @@ import java.util.Scanner;
 
 public class Machine {
     public static void main(String[] args){
-        System.out.println("Write how many cups of coffee you will need:");
         Scanner scan = new Scanner(System.in);
-        int input = scan.nextInt();
-        int water = 200;
-        int milk = 50;
-        int coffe = 15;
-        System.out.println("For "+ input + " cups of coffee you will need:\n" +
-                +water*input+" ml of water\n" +
-                +milk*input+" ml of milk\n" +
-                +coffe*input+" g of coffee beans");
+        System.out.print("Write how many ml of water the coffee machine has: ");
+        int water = scan.nextInt();
+        System.out.print("Write how many ml of milk the coffee machine has: ");
+        int milk = scan.nextInt();
+        System.out.print("Write how many grams of coffee beans the coffee machine has: ");
+        int beans = scan.nextInt();
+        System.out.print("Write how many cups of coffee you will need: ");
+        int cups = scan.nextInt();
+
+        int waterCup = water / 200;
+        int milkCup = milk / 50;
+        int beansCup = beans / 15;
+
+        int lim = Math.min(waterCup, Math.min(milkCup, beansCup));
+
+        if (cups > lim) {
+            System.out.println("No, I can make only " + lim + " cup(s) of coffee");
+        } else if (cups == lim) {
+            System.out.println("Yes, I can make that amount of coffee");
+        } else {
+            int additionally = lim - cups;
+            System.out.println("Yes, I can make that amount of coffee (and even " + additionally + " more than that)");
+        }
     }
 }
