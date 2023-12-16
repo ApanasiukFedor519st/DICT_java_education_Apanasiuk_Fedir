@@ -59,7 +59,6 @@ public class Matrix {
         }
         return product;
     }
-
     public Matrix transpose(int mode) {
         Matrix result = new Matrix(this.cols, this.rows);
         switch (mode) {
@@ -94,6 +93,44 @@ public class Matrix {
         }
         return result;
     }
+
+    public double getDeterminant() {
+        return calculateDeterminant(this.matrix);
+    }
+
+    private double calculateDeterminant(double[][] matrixA) {
+        if (matrixA.length == 2) {
+            return (matrixA[0][0] * matrixA[1][1]) - (matrixA[0][1] * matrixA[1][0]);
+        }
+
+        double sum = 0.0;
+
+        for (int col = 0; col < matrixA.length; col++) {
+            sum += matrixA[0][col] * Math.pow(-1.0, 1 + col + 1) * calculateDeterminant(getSubMatrix(matrixA, 0, col));
+        }
+
+        return sum;
+    }
+
+    private double[][] getSubMatrix(double[][] matrix, int skipRow, int skipCol) {
+        double[][] subMatrix = new double[matrix.length - 1][matrix.length - 1];
+
+        for (int row = 0, subRow = 0; row < matrix.length; row++) {
+            if (row == skipRow) {
+                continue;
+            }
+            for (int col = 0, subCol = 0; col < matrix[row].length; col++) {
+                if (col == skipCol) {
+                    continue;
+                }
+                subMatrix[subRow][subCol] = matrix[row][col];
+                subCol++;
+            }
+            subRow++;
+        }
+
+        return subMatrix;
+    }
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
         menu(input);
@@ -105,6 +142,7 @@ public class Matrix {
             System.out.println("2. Multiply matrix to a constant");
             System.out.println("3. Multiply matrices");
             System.out.println("4. Transpose matrix");
+            System.out.println("5. Calculate a determinant");
             System.out.println("0. Exit");
             System.out.print("Your choice: ");
             choice = input.nextInt();
@@ -121,6 +159,9 @@ public class Matrix {
                 case 4:
                     transposeMenu(input);
                     break;
+                case 5:
+                    findMatrixDeterminant(input);
+                    break;
                 case 0:
                     return;
                 default:
@@ -129,10 +170,8 @@ public class Matrix {
             }
         } while(true);
     }
-
     private static void transposeMenu(Scanner input) {
         int choice;
-
         do {
             System.out.println();
             System.out.println("1. Main diagonal");
@@ -145,10 +184,8 @@ public class Matrix {
                 System.out.println("Invalid choice!");
             }
         } while (choice < 1 || choice > 4);
-
         transposeMatrix(input, choice);
     }
-
     private static Matrix getMatrix(Scanner input, String number) {
         System.out.printf("Enter size of %s matrix: ", number);
         Matrix matrix = new Matrix(input.nextInt(), input.nextInt());
@@ -166,8 +203,9 @@ public class Matrix {
             System.out.println("ERROR");
         }
     }
+
     private static void multiplyMatrixByConstant(Scanner input) {
-        Matrix matrixA = getMatrix(input, "first");
+        Matrix matrixA = getMatrix(input, "the");
         System.out.print("Enter the constant: ");
         Matrix result = matrixA.multiply(input.nextInt());
         System.out.println("The multiplication result is:");
@@ -183,10 +221,19 @@ public class Matrix {
             System.out.println("ERROR: First matrix rows must equal second matrix columns!");
         }
     }
-
     private static void transposeMatrix(Scanner input, int mode) {
         Matrix matrix = getMatrix(input, "the");
         System.out.println("The result is:");
         matrix.transpose(mode).print();
+    }
+
+    private static void findMatrixDeterminant(Scanner input) {
+        Matrix matrix = getMatrix(input, "the");
+        if (matrix.getRows() == matrix.getCols()) {
+            System.out.println("The result is:");
+            System.out.println(matrix.getDeterminant());
+        } else {
+            System.out.println("Can't get determinant of non-square matrix");
+        }
     }
 }
